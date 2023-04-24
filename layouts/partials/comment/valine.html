@@ -3,12 +3,6 @@
 <script defer src="{{ printf $assets.valine.js.url $assets.valine.version }}" {{ with $assets.valine.js.sri }}
   integrity="{{ . }}" {{ end }} crossorigin></script>
 {{- with .Site.Params.comment.valine }}
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    new Valine({
-      el: "#valine-comments",
-      {{- partial "utils/get-js-configs" . | safeJS }}
-    })
-  });
-</script>
+{{ $valineInit := resources.Get "js/module-initializers/valine.js" | resources.ExecuteAsTemplate "js/module-initializers/valine.js" . | js.Build (dict "minify" true) | minify | fingerprint "sha384" }}
+<script defer type="text/javascript" src="{{ $valineInit.Permalink }}"></script>
 {{- end }}

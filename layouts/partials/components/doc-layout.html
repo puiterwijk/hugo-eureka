@@ -12,7 +12,7 @@
             <div class="flex">
                 <div class="w-full lg:w-3/4 px-6">
                     {{ partial "components/post-article" . }}
-                    
+
                     {{ with .GetTerms "tags" }}
                     {{ partial "components/post-tags" . }}
                     {{ end }}
@@ -40,16 +40,12 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        {{/* highlight.js */}}
-        {{- if eq .Site.Params.highlight.handler "highlightjs" }}
-        hljs.highlightAll();
-        {{- end }}
-        changeSidebarHeight();
-        switchDocToc();
-    })
-</script>
+{{- if eq .Site.Params.highlight.handler "highlightjs" }}
+  {{ $highlightjsInit := resources.Get "js/module-initializers/highlight.js" | resources.ExecuteAsTemplate "js/module-initializers/highlight.js" . | js.Build (dict "minify" true) | minify | fingerprint "sha384" }}
+  <script defer type="text/javascript" src="{{ $highlightjsInit.Permalink }}"></script>
+{{- end }}
+{{ $doclayoutInit := resources.Get "js/module-initializers/doclayout.js" | resources.ExecuteAsTemplate "js/module-initializers/doclayout.js" . | js.Build (dict "minify" true) | minify | fingerprint "sha384" }}
+<script defer type="text/javascript" src="{{ $doclayoutInit.Permalink }}"></script>
 
 {{ define "doc-sidebar" }}
 {{/*  Deprecation warning(v1.0.0) starts */}}
@@ -75,7 +71,7 @@
     <div class="flex flex-wrap ms-4 -me-2 p-2 bg-secondary-bg md:bg-primary-bg rounded">
         <a class="{{ if eq .context.Permalink .permalink }}text-eureka{{ end }} hover:text-eureka"
             href="{{ .context.Permalink }}">{{ .context.LinkTitle }}</a>
-        
+
         {{ $versions := partial "get-versions" (dict "context" .context) }}
         {{ if $versions }}
         <div class="relative ms-2 cursor-pointer">
@@ -100,11 +96,8 @@
         </div>
         <div class="fixed hidden inset-0 opacity-0 h-full w-full cursor-default z-0" id="switch-canvas">
         </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                switchDocVersion();
-            })
-        </script>
+        {{ $docversionsInit := resources.Get "js/module-initializers/docversions.js" | resources.ExecuteAsTemplate "js/module-initializers/docversions.js" . | js.Build (dict "minify" true) | minify | fingerprint "sha384" }}
+        <script defer type="text/javascript" src="{{ $docversionsInit.Permalink }}"></script>
         {{ end }}
 
 

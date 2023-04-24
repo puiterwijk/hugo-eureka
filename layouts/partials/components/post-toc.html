@@ -14,8 +14,5 @@
 >
   {{ .TableOfContents }}
 </div>
-<script>
-  window.addEventListener("DOMContentLoaded", () => {
-    enableStickyToc();
-  });
-</script>
+{{ $stickytocInit := resources.Get "js/module-initializers/stickytoc.js" | resources.ExecuteAsTemplate "js/module-initializers/stickytoc.js" . | js.Build (dict "minify" true) | minify | fingerprint "sha384" }}
+<script defer type="text/javascript" src="{{ $stickytocInit.Permalink }}"></script>

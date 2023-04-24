@@ -13,9 +13,6 @@
         {{ end }}
     </div>
 </div>
-<script>
-    document.addEventListener('DOMContentLoaded', ()=>{
-        enableMasonry()
-    })
-</script>
+{{ $masonryInit := resources.Get "js/module-initializers/masonry.js" | resources.ExecuteAsTemplate "js/module-initializers/masonry.js" . | js.Build (dict "minify" true) | minify | fingerprint "sha384" }}
+<script defer type="text/javascript" src="{{ $masonryInit.Permalink }}"></script>
 {{ end }}

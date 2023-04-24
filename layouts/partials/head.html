@@ -125,19 +125,8 @@
   integrity="{{ . }}" {{ end }} crossorigin></script>
 <script defer src="{{ printf $assets.katex.autoRender.url $assets.katex.version }}"
   {{ with $assets.katex.autoRender.sri }} integrity="{{ . }}" {{ end }} crossorigin></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    renderMathInElement(document.body, {
-      delimiters: [
-        { left: "$$", right: "$$", display: true },
-        { left: "$", right: "$", display: false },
-        { left: "\\(", right: "\\)", display: false },
-        { left: "\\[", right: "\\]", display: true }
-      ],
-      {{- partial "utils/get-js-configs" .Site.Params.math.katex | safeJS }}
-    });
-  });
-</script>
+{{ $katexInit := resources.Get "js/module-initializers/katex.js" | resources.ExecuteAsTemplate "js/module-initializers/katex.js" . | js.Build (dict "minify" true) | minify | fingerprint "sha384" }}
+<script defer type="text/javascript" src="{{ $katexInit.Permalink }}"></script>
 {{- end }}
 
 {{/*  Mermaid  */}}
@@ -145,25 +134,16 @@
 <script defer src="{{ printf $assets.mermaid.js.url $assets.mermaid.version }}" {{ with $assets.mermaid.js.sri }}
   integrity="{{ . }}" {{ end }} crossorigin></script>
 {{- with .Site.Params.diagram.mermaid }}
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    mermaid.initialize({
-      {{- partial "utils/get-js-configs" . | safeJS }}
-    });
-  });
-</script>
+{{ $mermaidInit := resources.Get "js/module-initializers/mermaid.js" | resources.ExecuteAsTemplate "js/module-initializers/mermaid.js" . | js.Build (dict "minify" true) | minify | fingerprint "sha384" }}
+<script defer type="text/javascript" src="{{ $mermaidInit.Permalink }}"></script>
 {{- end }}
 {{- end }}
 
 {{- if and .Site.GoogleAnalytics hugo.IsProduction }}
 <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ .Site.GoogleAnalytics }}"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag() { dataLayer.push(arguments); }
-  gtag('js', new Date());
-  gtag('config', '{{ .Site.GoogleAnalytics }}');
-</script>
+{{ $googleAnalyticsInit := resources.Get "js/module-initializers/google-analytics.js" | resources.ExecuteAsTemplate "js/module-initializers/google-analytics.js" . | js.Build (dict "minify" true) | minify | fingerprint "sha384" }}
+<script defer type="text/javascript" src="{{ $googleAnalyticsInit.Permalink }}"></script>
 {{- end }}
 
 {{/*  Custom Head  */}}

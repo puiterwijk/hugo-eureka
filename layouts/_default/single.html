@@ -51,10 +51,7 @@
 
   {{/* highlight.js */}}
   {{- if eq .Site.Params.highlight.handler "highlightjs" }}
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        hljs.highlightAll();
-      });
-    </script>
+  {{ $highlightjsInit := resources.Get "js/module-initializers/highlight.js" | resources.ExecuteAsTemplate "js/module-initializers/highlight.js" . | js.Build (dict "minify" true) | minify | fingerprint "sha384" }}
+  <script defer type="text/javascript" src="{{ $highlightjsInit.Permalink }}"></script>
   {{- end }}
 {{ end }}
